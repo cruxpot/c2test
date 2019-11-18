@@ -17,7 +17,7 @@ variable "ansible_playbook" {
 
 variable "ansible_arguments" {
   default = []
-  type    = lis"
+  type    = list
   description = "Additional Ansible Arguments"
 }
 
@@ -48,7 +48,7 @@ variable "install" {
 */
 
 variable "amis" {
-  type = "map"
+  type = map
   default = {
 
     // Taken from https://wiki.debian.org/Cloud/AmazonEC2Image/Stretch
