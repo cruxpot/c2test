@@ -5,18 +5,18 @@ terraform {
 data "aws_region" "current" {}
 
 resource "random_id" "server" {
-  count = "var.varcount"
+  count = var.varcount
   byte_length = 4
 }
 
 resource "tls_private_key" "ssh" {
-  count = "var.varcount"
+  count = var.varcount
   algorithm = "RSA"
   rsa_bits = 4096
 }
 
 resource "aws_key_pair" "http-rdir" {
-  count = "var.varcount"
+  count = var.varcount
   key_name = "http-rdir-key-${count.index}"  
   public_key = "tls_private_key.ssh.*.public_key_openssh[count.index]"
 }
@@ -28,17 +28,17 @@ resource "aws_instance" "http-rdir" {
 
   //provider = "aws.${element(var.regions, count.index)}"
 
-  count = "var.varcount"
+  count = var.varcount
   
   tags = {
     Name = "http-rdir-${random_id.server.*.hex[count.index]}"
   }
 
   ami = "var.amis[data.aws_region.current.name]"
-  instance_type = "var.instance_type"
+  instance_type = var.instance_type
   key_name = "aws_key_pair.http-rdir.*.key_name[count.index]"
   vpc_security_group_ids = ["${aws_security_group.http-rdir.id}"]
-  subnet_id = "var.subnet_id"
+  subnet_id = var.subnet_id
   associate_public_ip_address = true
 
   provisioner "remote-exec" {
@@ -94,7 +94,7 @@ resource "null_resource" "ansible_provisioner" {
 
 data "template_file" "ssh_config" {
 
-  count    = "${var.varcount}"
+  count    = var.varcount
 
   template = "${file("./data/templates/ssh_config.tpl")}"
 
