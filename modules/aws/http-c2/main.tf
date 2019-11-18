@@ -5,18 +5,18 @@ terraform {
 data "aws_region" "current" {}
 
 resource "random_id" "server" {
-  count = "var.varcount"
+  count = var.varcount
   byte_length = 4
 }
 
 resource "tls_private_key" "ssh" {
-  count = "var.varcount"
+  count = var.varcount
   algorithm = "RSA"
   rsa_bits = 4096
 }
 
 resource "aws_key_pair" "http-c2" {
-  count = "var.varcount"
+  count = var.varcount
   key_name = "http-c2-key-${count.index}"
   public_key = "tls_private_key.ssh.*.public_key_openssh[count.index]"
 }
@@ -28,7 +28,7 @@ resource "aws_instance" "http-c2" {
 
   //provider = "aws.${element(var.regions, count.index)}"
 
-  count = "var.varcount"
+  count = var.varcount
   
   tags = {
     Name = "http-c2-${random_id.server.*.hex[count.index]}"
