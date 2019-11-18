@@ -13,7 +13,7 @@ variable "ansible_playbook" {
 
 variable "ansible_arguments" {
   default = []
-  type    = lis"
+  type    = list
   description = "Additional Ansible Arguments"
 }
 
