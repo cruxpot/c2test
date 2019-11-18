@@ -17,13 +17,13 @@ variable "ansible_playbook" {
 
 variable "ansible_arguments" {
   default = []
-  type    = "list"
+  type    = lis"
   description = "Additional Ansible Arguments"
 }
 
 variable "ansible_vars" {
   default = []
-  type    = "list"
+  type    = list
   description = "Environment variables"
 }
 
@@ -32,13 +32,13 @@ variable "instance_type" {
 }
 
 variable "install" {
-  type = "list"
+  type = list
   default = []
 }
 
 /*
 variable "install" {
-  type = "map"
+  type = map
   default = {
     "empire" = "./scripts/install_empire.sh"
     "metasploit" = "./scripts/install_metasploit.sh"
