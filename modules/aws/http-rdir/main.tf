@@ -70,7 +70,7 @@ resource "aws_instance" "http-rdir" {
 }
 
 resource "null_resource" "ansible_provisioner" {
-  count = "signum(length(var.ansible_playbook)) == 1 ? var.varcount : 0"
+  count = signum(length(var.ansible_playbook)) == 1 ? var.varcount : 0
 
   depends_on = [aws_instance.http-rdir]
 
@@ -111,7 +111,7 @@ data "template_file" "ssh_config" {
 
 resource "null_resource" "gen_ssh_config" {
 
-  count = "var.varcount"
+  count = var.varcount
 
   triggers = {
     template_rendered = "${data.template_file.ssh_config.*.rendered[count.index]}"
