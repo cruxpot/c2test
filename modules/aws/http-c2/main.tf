@@ -98,7 +98,7 @@ data "template_file" "ssh_config" {
     name = join( "", ["dns_rdir_", aws_instance.http-c2.*.public_ip[count.index]])
     hostname = aws_instance.http-c2.*.public_ip[count.index]
     user = "admin"
-    identityfile = join("", path.root, "/data/ssh_keys/", aws_instance.http-c2.*.public_ip[count.index]])
+    identityfile = join("", [path.root, "/data/ssh_keys/", aws_instance.http-c2.*.public_ip[count.index]])
   }
 
 }
