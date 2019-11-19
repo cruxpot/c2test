@@ -9,7 +9,7 @@ terraform {
 //returns 
 //curl http://169.254.169.254/latest/meta-data/public-ipv4
 data "external" "get_public_ip" {
-  program = ["bash", "./scripts/get_public_ip.sh" ]
+  program = ["bash", "./data/scripts/get_public_ip.sh" ]
 }
 
 resource "aws_security_group" "http-rdir" {
