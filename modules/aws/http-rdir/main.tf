@@ -64,7 +64,7 @@ resource "aws_instance" "http-rdir" {
 
   provisioner "local-exec" {
     when = destroy
-    command = join("", ["rm ./data/ssh_keys/", self.public_ip*])
+    command = join("", ["rm ./data/ssh_keys/", self.public_ip])
   }
 
 }
