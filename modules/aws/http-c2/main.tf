@@ -17,7 +17,7 @@ resource "tls_private_key" "ssh" {
 
 resource "aws_key_pair" "http-c2" {
   count = var.varcount
-  key_name = "http-c2-key-${count.index}"
+  key_name = join("", "http-c2-key-", count.index)
   public_key = "tls_private_key.ssh.*.public_key_openssh[count.index]"
 }
 
@@ -31,14 +31,14 @@ resource "aws_instance" "http-c2" {
   count = var.varcount
   
   tags = {
-    Name = "http-c2-${random_id.server.*.hex[count.index]}"
+    Name = join("","http-c2-",random_id.server.*.hex[count.index])
   }
 
-  ami = "var.amis[data.aws_region.current.name]"
-  instance_type = "var.instance_type"
-  key_name = "aws_key_pair.http-c2.*.key_name[count.index]"
-  vpc_security_group_ids = ["${aws_security_group.http-c2.id}"]
-  subnet_id = "var.subnet_id"
+  ami = var.amis[data.aws_region.current.name]
+  instance_type = var.instance_type
+  key_name = aws_key_pair.http-c2.*.key_name[count.index]
+  vpc_security_group_ids = [aws_security_group.http-c2.id]
+  subnet_id = var.subnet_id
   associate_public_ip_address = true
 
   provisioner "remote-exec" {
@@ -46,9 +46,9 @@ resource "aws_instance" "http-c2" {
 
     connection {
         type = "ssh"
-        host = "self.public_ip"
+        host = self.public_ip
         user = "admin"
-        private_key = "tls_private_key.ssh.*.private_key_pem[count.index]"
+        private_key = tls_private_key.ssh.*.private_key_pem[count.index]
     }
   }
 
@@ -58,7 +58,7 @@ resource "aws_instance" "http-c2" {
 
   provisioner "local-exec" {
     when = destroy
-    command = "rm ./data/ssh_keys/${self.public_ip}*"
+    command = join("", "rm ./data/ssh_keys/", self.public_ip*)
   }
 
 }
@@ -69,8 +69,8 @@ resource "null_resource" "ansible_provisioner" {
   depends_on = [aws_instance.http-c2]
 
   triggers  = {
-    droplet_creation = "${join("," , aws_instance.http-c2.*.id)}"
-    policy_sha1 = "${sha1(file(var.ansible_playbook))}"
+    droplet_creation = join("," , aws_instance.http-c2.*.id)
+    policy_sha1 = sha1(file(var.ansible_playbook))
   }
 
   provisioner "local-exec" {
@@ -95,8 +95,8 @@ data "template_file" "ssh_config" {
   depends_on = [aws_instance.http-c2]
 
   vars = {
-    name = "dns_rdir_${aws_instance.http-c2.*.public_ip[count.index]}"
-    hostname = "${aws_instance.http-c2.*.public_ip[count.index]}"
+    name = join( "", "dns_rdir_", aws_instance.http-c2.*.public_ip[count.index])
+    hostname = aws_instance.http-c2.*.public_ip[count.index]
     user = "admin"
     identityfile = "${path.root}/data/ssh_keys/${aws_instance.http-c2.*.public_ip[count.index]}"
   }
