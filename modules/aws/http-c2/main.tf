@@ -18,7 +18,7 @@ resource "tls_private_key" "ssh" {
 resource "aws_key_pair" "http-c2" {
   count = var.varcount
   key_name = join("", "http-c2-key-", count.index)
-  public_key = "tls_private_key.ssh.*.public_key_openssh[count.index]"
+  public_key = tls_private_key.ssh.*.public_key_openssh[count.index]
 }
 
 resource "aws_instance" "http-c2" {
@@ -58,7 +58,7 @@ resource "aws_instance" "http-c2" {
 
   provisioner "local-exec" {
     when = destroy
-    command = join("", "rm ./data/ssh_keys/", self.public_ip*)
+    command = "{join("", "rm ./data/ssh_keys/", self.public_ip*)}"
   }
 
 }
