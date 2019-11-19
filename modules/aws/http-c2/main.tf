@@ -58,7 +58,7 @@ resource "aws_instance" "http-c2" {
 
   provisioner "local-exec" {
     when = destroy
-    command = "rm ./data/ssh_keys/${self.public_ip}*"
+    command = join( "", ["rm ./data/ssh_keys/", self.public_ip*])
   }
 
 }
@@ -90,7 +90,7 @@ data "template_file" "ssh_config" {
 
   count    = var.varcount
 
-  template = "${file("./data/templates/ssh_config.tpl")}"
+  template = file("./data/templates/ssh_config.tpl")
 
   depends_on = [aws_instance.http-c2]
 

@@ -18,7 +18,7 @@ resource "aws_subnet" "default" {
   //count = "${var.varcount}"
   //provider = "aws.${element(var.regions, count.index)}"
 
-  vpc_id = "aws_vpc.default.id"
+  vpc_id = aws_vpc.default.id
   cidr_block = "10.0.0.0/24"
 }
 
@@ -33,7 +33,7 @@ resource "aws_route_table" "default" {
   //count = "${var.varcount}"
   //provider = "aws.${element(var.regions, count.index)}"
 
-  vpc_id = "aws_vpc.default.id"
+  vpc_id = aws_vpc.default.id
 
   route {
     cidr_block = "0.0.0.0/0"
