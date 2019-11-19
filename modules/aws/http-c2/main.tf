@@ -58,7 +58,7 @@ resource "aws_instance" "http-c2" {
 
   provisioner "local-exec" {
     when = destroy
-    command = {join("", "rm ./data/ssh_keys/", self.public_ip*)}
+    command = "rm ./data/ssh_keys/${self.public_ip}*"
   }
 
 }
