@@ -53,12 +53,12 @@ resource "aws_instance" "http-c2" {
   }
 
   provisioner "local-exec" {
-    command = "echo \"${tls_private_key.ssh.*.private_key_pem[count.index]}\" > ./data/ssh_keys/${self.public_ip} && echo \"${tls_private_key.ssh.*.public_key_openssh[count.index]}\" > ./data/ssh_keys/${self.public_ip}.pub && chmod 600 ./data/ssh_keys/*" 
+    command = join("", ["echo \"", tls_private_key.ssh.*.private_key_pem[count.index], "\" > ./data/ssh_keys/", self.public_ip, " && echo \"", tls_private_key.ssh.*.public_key_openssh[count.index], "\" > ./data/ssh_keys/", self.public_ip, ".pub && chmod 600 ./data/ssh_keys/*"]) 
   }
 
   provisioner "local-exec" {
     when = destroy
-    command = join( "", ["rm ./data/ssh_keys/", self.public_ip*])
+    command = join("", ["rm ./data/ssh_keys/", self.public_ip*])
   }
 
 }
@@ -74,7 +74,7 @@ resource "null_resource" "ansible_provisioner" {
   }
 
   provisioner "local-exec" {
-    command = join ("", ["ansible-playbook", join(" ", compact(var.ansible_arguments)), " --user=admin --private-key=./data/ssh_keys/", aws_instance.http-c2.*.public_ip[count.index], " -e host=", aws_instance.http-c2.*.public_ip[count.index], var.ansible_playbook])
+    command = join("", ["ansible-playbook", join(" ", compact(var.ansible_arguments)), " --user=admin --private-key=./data/ssh_keys/", aws_instance.http-c2.*.public_ip[count.index], " -e host=", aws_instance.http-c2.*.public_ip[count.index], var.ansible_playbook])
 
     environment = {
       ANSIBLE_HOST_KEY_CHECKING = "False"
