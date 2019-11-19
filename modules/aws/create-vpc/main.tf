@@ -26,7 +26,7 @@ resource "aws_internet_gateway" "default" {
   //count = "${var.varcount}"
   //provider = "aws.${element(var.regions, count.index)}"
 
-  vpc_id = "aws_vpc.default.id"
+  vpc_id = aws_vpc.default.id
 }
 
 resource "aws_route_table" "default" {
@@ -35,16 +35,16 @@ resource "aws_route_table" "default" {
 
   vpc_id = "aws_vpc.default.id"
 
-  //route {
-  //  cidr_block = "0.0.0.0/0"
-  //  gateway_id = "aws_internet_gateway.default.id"
-  //}
+  route {
+    cidr_block = "0.0.0.0/0"
+    gateway_id = aws_internet_gateway.default.id
+  }
 }
 
 resource "aws_route_table_association" "default" {
   //count = "${var.varcount}"
   //provider = "aws.${element(var.regions, count.index)}"
 
-  subnet_id = "aws_subnet.default.id"
-  route_table_id = "aws_route_table.default.id"
+  subnet_id = aws_subnet.default.id
+  route_table_id = aws_route_table.default.id
 }
